@@ -1,0 +1,53 @@
+matching:
+  model_name: ViT-B/32
+  # Start threshold: score a frame must hit to BEGIN a new detection.
+  # Do NOT lower below 0.90 — false positives increase sharply below that.
+  threshold: 0.91
+  # Lower score allowed after an ad has already started.
+  # Helps keep one detection alive through brief weak frames.
+  continue_threshold_delta: 0.08
+  # Number of CONSECUTIVE frames that must all score >= threshold
+  # before a detection is confirmed. This is the #1 anti-false-positive guard.
+  # 3 = 3 seconds at 1 FPS. Raise to 4 or 5 if still getting noise.
+  confirmation_frames: 2
+  min_frames: 2
+  min_duration: 1.5
+  # Maximum gap between accepted frames before splitting one ad into two segments.
+  gap_threshold: 5.0
+
+paths:
+  input_dir: ../input_videos
+  log_dir: logs
+  output_dir: output
+  prototypes_dir: prototypes
+
+processing:
+  process_every_n_frames: 5
+  show_live: false
+
+two_stage:
+  stage1_bank_dir: banks/stage1
+  ad_bank_dir: banks/ads
+  batch_size: 256
+  # Stage 1 only decides ASTON_BAND vs IGNORE.
+  stage1_threshold: 0.82
+  stage1_margin: 0.03
+  save_debug_csv: false
+  confirmation_frames: 3
+  end_gap_seconds: 1.2
+  min_duration: 1.2
+  max_segment_frames: 12
+  # Stage 2 identifies the ad from banks/ads/<ad name> folders.
+  # Raise these if unknown ads are still being forced into known labels.
+  ad_threshold: 0.88
+  ad_margin: 0.03
+  ad_segment_margin: 0.015
+  visual_threshold: 0.75
+  visual_segment_margin: 0.03
+  min_vote_ratio: 0.25
+
+roi:
+  x_end: 1.0
+  x_start: 0.0028
+  y_end: 0.9479
+  y_start: 0.8073

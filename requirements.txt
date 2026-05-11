@@ -1,0 +1,11 @@
+torch
+torchvision
+ftfy
+regex
+tqdm
+git+https://github.com/openai/CLIP.git
+opencv-python
+Pillow
+PyYAML
+scikit-learn
+faiss-cpu
