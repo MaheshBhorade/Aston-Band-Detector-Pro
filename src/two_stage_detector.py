@@ -280,11 +280,28 @@ class TwoStageAstonDetector:
             if segment["label"] != "UNKNOWN_ASTON"
         ]
         detections_path = self._safe_output_path(output_dir, f"{base_name}_two_stage_detections.csv")
-        export_to_csv(detections, str(detections_path))
+        channel_info = self.config.get("channel", {})
+        export_to_csv(detections, str(detections_path), channel_info=channel_info)
         self._export_segment_summary(base_name, output_dir)
         self._export_unknowns(base_name, output_dir)
+        self._export_snapshots(base_name, output_dir)
         if self.save_debug_csv:
             self._export_debug(base_name, output_dir)
+
+    def _export_snapshots(self, base_name, output_dir):
+        snapshot_dir = Path(output_dir) / "snapshots" / base_name
+        snapshot_dir.mkdir(parents=True, exist_ok=True)
+
+        for segment in self.segments:
+            if segment["label"] == "UNKNOWN_ASTON":
+                continue
+
+            # Save the sharpest frame as a high-quality snapshot (PNG)
+            frame = segment["frames"][0]
+            label = segment["label"]
+            start_time = int(segment["start"])
+            filename = f"{label}_{start_time}s_snapshot.png"
+            cv2.imwrite(str(snapshot_dir / filename), frame)
 
     def _safe_output_path(self, output_dir, filename):
         path = Path(output_dir) / filename
@@ -322,13 +339,17 @@ class TwoStageAstonDetector:
         unknown_dir = Path(output_dir) / "unknown_aston" / base_name
         unknown_dir.mkdir(parents=True, exist_ok=True)
 
-        for idx, segment in enumerate(self.segments, 1):
+        for seg_idx, segment in enumerate(self.segments, 1):
             if segment["label"] != "UNKNOWN_ASTON":
                 continue
 
-            frame = segment["frames"][0]
-            start = int(segment["start"])
-            cv2.imwrite(str(unknown_dir / f"unknown_{idx:04d}_{start}s.jpg"), frame)
+            # Save up to 10 frames for the ad bank
+            frames_to_save = segment["frames"][:10]
+            start_time = int(segment["start"])
+            
+            for f_idx, frame in enumerate(frames_to_save):
+                filename = f"unknown_seg{seg_idx:03d}_f{f_idx:02d}_{start_time}s.jpg"
+                cv2.imwrite(str(unknown_dir / filename), frame)
 
     def _export_debug(self, base_name, output_dir):
         path = Path(output_dir) / f"{base_name}_two_stage_debug.csv"

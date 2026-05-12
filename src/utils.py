@@ -34,8 +34,9 @@ def export_to_csv(results, output_path, channel_info=None):
     """
     Exports detections to CSV using the exact format from test_ad_detection.
     """
-    channel_id = channel_info.get('id', '1010') if channel_info else '1010'
-    channel_name = channel_info.get('name', 'Armenia TV') if channel_info else 'Armenia TV'
+    channel_config = channel_info if channel_info else {}
+    channel_id = channel_config.get('id', '1011')
+    channel_name = channel_config.get('name', 'Shant TV')
     formatted_date = datetime.datetime.now().strftime("%Y-%m-%d")
 
     with open(output_path, "w", newline="") as f:
@@ -61,7 +62,7 @@ def export_to_csv(results, output_path, channel_info=None):
                 round(duration, 2),
                 round(conf, 2),
                 2, # labelid (Aston usually 2 in your system)
-                "Ad",
+                "Secondary Element",
                 ad_id,
                 ""
             ])

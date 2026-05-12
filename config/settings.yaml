@@ -15,6 +15,10 @@ matching:
   # Maximum gap between accepted frames before splitting one ad into two segments.
   gap_threshold: 5.0
 
+channel:
+  name: Shant TV
+  id: "1011"
+
 paths:
   input_dir: ../input_videos
   log_dir: logs
@@ -22,7 +26,7 @@ paths:
   prototypes_dir: prototypes
 
 processing:
-  process_every_n_frames: 5
+  process_every_n_frames: 12
   show_live: false
 
 two_stage:
@@ -41,10 +45,10 @@ two_stage:
   # Raise these if unknown ads are still being forced into known labels.
   ad_threshold: 0.88
   ad_margin: 0.03
-  ad_segment_margin: 0.015
-  visual_threshold: 0.75
-  visual_segment_margin: 0.03
-  min_vote_ratio: 0.25
+  ad_segment_margin: 0.02
+  visual_threshold: 0.87
+  visual_segment_margin: 0.04
+  min_vote_ratio: 0.60
 
 roi:
   x_end: 1.0
